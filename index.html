@@ -160,6 +160,7 @@
 </footer>
 
 <script src="js/config.js"></script>
+<script src="js/api-keys.js"></script>
 <script src="js/api.js"></script>
 <script src="js/confetti.js"></script>
 <script src="js/main-index.js"></script>
@@ -206,15 +207,15 @@
     grid.appendChild(card);
   });
 
-  // ถ้าตั้งค่า YouTube API Key ไว้ในหน้า Settings จะดึงรูปโปรไฟล์ช่องจริงมาแสดง
+  // ถ้าตั้งค่า YouTube API Key ไว้ที่ไฟล์ js/api-keys.js จะดึงรูปโปรไฟล์ช่องจริงมาแสดง
   // ถ้ายังไม่ตั้งค่า จะใช้ตัวอักษรย่อแทนไปก่อน
   (async () => {
     try {
-      const settings = await Api.getSettings();
-      if (!settings.youtubeApiKey) return;
+      const youtubeApiKey = window.APP_KEYS && window.APP_KEYS.youtubeApiKey;
+      if (!youtubeApiKey) return;
       const ids = INFLUENCERS.map((inf) => inf.channelId).filter(Boolean).join(",");
       const res = await fetch(
-        `${window.APP_CONFIG.YOUTUBE_API_URL}?part=snippet&id=${ids}&key=${settings.youtubeApiKey}`
+        `${window.APP_CONFIG.YOUTUBE_API_URL}?part=snippet&id=${ids}&key=${youtubeApiKey}`
       );
       const data = await res.json();
       (data.items || []).forEach((item) => {

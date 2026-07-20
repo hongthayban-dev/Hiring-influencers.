@@ -72,7 +72,10 @@
             <h2 style="margin:0;">${a.prefix}${a.firstName} ${a.lastName}</h2>
             <p style="margin:4px 0 0;color:var(--ink-soft);">รหัสผู้สมัคร: <strong>${a.id}</strong></p>
           </div>
-          <img class="a4-photo" src="${a.photo || ""}" alt="รูปถ่าย">
+          <div>
+            <img class="a4-photo" src="${a.photo || ""}" alt="รูปถ่าย">
+            ${a.photoDriveLink ? `<p style="margin:4px 0 0;text-align:center;"><a href="${a.photoDriveLink}" target="_blank">ดูรูปเต็ม</a></p>` : ""}
+          </div>
         </div>
 
         <div class="a4-grid">

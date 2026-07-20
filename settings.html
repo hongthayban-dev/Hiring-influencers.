@@ -109,48 +109,24 @@
     <!-- Google Drive -->
     <div class="form-card settings-section">
       <h3>การอัปโหลดวีดีโอขึ้น Google Drive</h3>
-      <p class="hint">ต้องสร้าง OAuth Client ID ประเภท "Web application" ใน Google Cloud Console แล้วเพิ่มโดเมนที่ใช้เปิดเว็บนี้ใน Authorized JavaScript origins จึงจะอัปโหลดอัตโนมัติได้ ถ้าไม่ตั้งค่า ระบบจะดาวน์โหลดไฟล์ (เปลี่ยนชื่อตาม ID) ให้อัปโหลดเข้า Drive ด้วยมือแทน</p>
+      <p class="hint">Google OAuth Client ID ตั้งค่าแยกไว้ที่ไฟล์ <code>js/api-keys.js</code> (ไม่เก็บในฐานข้อมูล เพื่อไม่ให้คีย์จริงหลุดขึ้น git) — สร้างจาก Google Cloud Console ประเภท "Web application" แล้วเพิ่มโดเมนที่ใช้เปิดเว็บนี้ใน Authorized JavaScript origins ถ้าไม่ตั้งค่า ระบบจะดาวน์โหลดไฟล์ (เปลี่ยนชื่อตาม ID) ให้อัปโหลดเข้า Drive ด้วยมือแทน</p>
       <div class="field">
         <label>Google Drive Folder ID</label>
         <input type="text" id="driveFolderId">
       </div>
-      <div class="field">
-        <label>Google OAuth Client ID</label>
-        <input type="text" id="driveClientId" placeholder="xxxxxxxx.apps.googleusercontent.com">
-      </div>
-      <button type="button" class="btn btn-primary" id="saveDrive">บันทึกการเชื่อมต่อ Drive</button>
+      <button type="button" class="btn btn-primary" id="saveDrive">บันทึก Drive Folder ID</button>
     </div>
 
     <!-- YouTube API -->
     <div class="form-card settings-section">
       <h3>YouTube Data API (ดึงยอดผู้ติดตามอัตโนมัติ)</h3>
-      <p class="hint">สร้าง API Key จาก Google Cloud Console แล้วเปิดใช้งาน "YouTube Data API v3"</p>
-      <div class="field">
-        <label>YouTube API Key</label>
-        <input type="text" id="youtubeApiKey">
-      </div>
-      <button type="button" class="btn btn-primary" id="saveYoutube">บันทึก YouTube API Key</button>
+      <p class="hint">API Key ตั้งค่าแยกไว้ที่ไฟล์ <code>js/api-keys.js</code> (ไม่เก็บในฐานข้อมูล) — สร้างจาก Google Cloud Console โดยเปิดใช้งาน "YouTube Data API v3"</p>
     </div>
 
     <!-- EmailJS -->
     <div class="form-card settings-section">
       <h3>การส่งอีเมลแจ้งเตือนผู้สมัคร (EmailJS)</h3>
-      <p class="hint">สมัครใช้งานฟรีที่ emailjs.com สร้าง Email Service + Template แล้วนำค่าต่อไปนี้มากรอก Template ควรมีตัวแปร to_email, to_name, applicant_id, platform_name, contract_title, contract_text</p>
-      <div class="field-row cols-3">
-        <div class="field">
-          <label>Service ID</label>
-          <input type="text" id="emailjsServiceId">
-        </div>
-        <div class="field">
-          <label>Template ID</label>
-          <input type="text" id="emailjsTemplateId">
-        </div>
-        <div class="field">
-          <label>Public Key</label>
-          <input type="text" id="emailjsPublicKey">
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary" id="saveEmailjs">บันทึกการเชื่อมต่ออีเมล</button>
+      <p class="hint">Service ID / Template ID / Public Key ตั้งค่าแยกไว้ที่ไฟล์ <code>js/api-keys.js</code> (ไม่เก็บในฐานข้อมูล) — สมัครใช้งานฟรีที่ emailjs.com สร้าง Email Service + Template ควรมีตัวแปร to_email, to_name, applicant_id, platform_name, contract_title, contract_text</p>
     </div>
 
     <!-- ผู้สมัครทั้งหมด -->

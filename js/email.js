@@ -1,5 +1,5 @@
 // ส่งอีเมลแจ้งเตือนผู้สมัครผ่าน EmailJS (ไม่ต้องมี backend)
-// ต้องตั้งค่า Service ID / Template ID / Public Key ในหน้า Settings ก่อน
+// ต้องตั้งค่า Service ID / Template ID / Public Key ในไฟล์ js/api-keys.js ก่อน
 // Template ที่ต้องสร้างใน EmailJS ควรมี placeholder: {{to_email}} {{to_name}} {{applicant_id}} {{contract_text}} {{platform_name}}
 const EmailNotify = (() => {
   let sdkLoaded = false;
@@ -19,7 +19,8 @@ const EmailNotify = (() => {
   }
 
   async function sendConfirmation({ settings, applicant }) {
-    const { emailjsServiceId, emailjsTemplateId, emailjsPublicKey } = settings;
+    const keys = window.APP_KEYS || {};
+    const { emailjsServiceId, emailjsTemplateId, emailjsPublicKey } = keys;
     if (!emailjsServiceId || !emailjsTemplateId || !emailjsPublicKey) {
       return { sent: false, reason: "NOT_CONFIGURED" };
     }

@@ -64,28 +64,47 @@
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> กำลังบันทึกข้อมูล...';
 
-    const { applicant, videoFile } = draft;
+    const { applicant, videoFile, photoFile } = draft;
     const ext = (applicant.videoOriginalName.split(".").pop() || "mp4").toLowerCase();
     const videoFilename = `${applicant.id}.${ext}`;
+    const photoFilename = `${applicant.id}-photo.jpg`;
 
     let videoStatus = "pending_manual_upload";
     let videoDriveLink = null;
     let videoDriveId = null;
+    let photoDriveLink = null;
+    let photoDriveId = null;
 
-    if (settings.driveClientId) {
+    const driveClientId = window.APP_KEYS && window.APP_KEYS.driveClientId;
+    if (driveClientId) {
       try {
         const result = await DriveUpload.uploadFile({
           file: videoFile,
           filename: videoFilename,
           folderId: settings.driveFolderId,
-          clientId: settings.driveClientId,
+          clientId: driveClientId,
         });
         videoStatus = "uploaded";
         videoDriveLink = result.webViewLink;
         videoDriveId = result.id;
       } catch (err) {
-        toast("อัปโหลดวีดีโอขึ้น Drive อัตโนมัติไม่สำเร็จ ระบบจะดาวน์โหลดไฟล์ให้อัปโหลดเอง", "error");
+        console.error("Drive upload failed:", err);
+        toast("อัปโหลดขึ้น Drive ไม่สำเร็จ: " + err.message + " — ระบบจะดาวน์โหลดไฟล์ให้อัปโหลดเอง", "error");
         DriveUpload.downloadRenamedFile(videoFile, videoFilename);
+      }
+      if (photoFile) {
+        try {
+          const photoResult = await DriveUpload.uploadFile({
+            file: photoFile,
+            filename: photoFilename,
+            folderId: settings.driveFolderId,
+            clientId: driveClientId,
+          });
+          photoDriveLink = photoResult.webViewLink;
+          photoDriveId = photoResult.id;
+        } catch (err) {
+          console.error("Photo upload failed:", err);
+        }
       }
     } else {
       DriveUpload.downloadRenamedFile(videoFile, videoFilename);
@@ -97,6 +116,8 @@
       videoStatus,
       videoDriveLink,
       videoDriveId,
+      photoDriveLink,
+      photoDriveId,
       contractAccepted: true,
       contractAcceptedAt: new Date().toISOString(),
       status: "รอการติดต่อกลับ",
@@ -127,7 +148,7 @@
     $("#successId").textContent = saved.id;
     $("#emailStatus").textContent = emailResult.sent
       ? "📧 ส่งอีเมลยืนยันการรับใบสมัครไปที่ " + saved.email + " แล้ว"
-      : "⚠️ ยังไม่ได้ส่งอีเมลยืนยันอัตโนมัติ (ยังไม่ได้ตั้งค่า EmailJS ในหน้า Settings) — กรุณาติดต่อผู้สมัครโดยตรง";
+      : "⚠️ ยังไม่ได้ส่งอีเมลยืนยันอัตโนมัติ (ยังไม่ได้ตั้งค่า EmailJS ในไฟล์ js/api-keys.js) — กรุณาติดต่อผู้สมัครโดยตรง";
     $("#videoStatus").textContent =
       videoStatus === "uploaded"
         ? "🎬 อัปโหลดวีดีโอขึ้น Google Drive สำเร็จแล้ว"

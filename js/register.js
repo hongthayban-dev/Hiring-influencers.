@@ -4,7 +4,8 @@
   let currentStep = 1;
   let settings = null;
   let appId = null;
-  let photoDataUrl = null;
+  let photoThumbDataUrl = null;
+  let photoFile = null;
   let videoFile = null;
   const socialState = {}; // { tiktok: {url, followers, connected}, ... }
 
@@ -65,26 +66,35 @@
     $("#age").value = calcAge(e.target.value);
   });
 
+  // สร้าง 2 เวอร์ชันจากรูปเดียวกัน: thumbnail เล็ก (เก็บฝังใน database สำหรับพรีวิว/รายชื่อผู้ดูแล)
+  // กับไฟล์เต็ม 640px (อัปโหลดขึ้น Google Drive ตอนเซ็นสัญญา ไม่ฝังเข้า database เพราะจะทำให้ไฟล์บวมเมื่อมีผู้สมัครเยอะ)
   function compressImage(file) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const reader = new FileReader();
       reader.onload = () => {
         img.onload = () => {
-          const maxDim = 640;
-          let { width, height } = img;
-          if (width > height && width > maxDim) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          } else if (height > maxDim) {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
-          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL("image/jpeg", 0.78));
+          const toCanvas = (maxDim) => {
+            let { width, height } = img;
+            if (width > height && width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+            return canvas;
+          };
+          const thumbDataUrl = toCanvas(160).toDataURL("image/jpeg", 0.6);
+          toCanvas(640).toBlob(
+            (blob) => resolve({ thumbDataUrl, fullBlob: blob }),
+            "image/jpeg",
+            0.78
+          );
         };
         img.onerror = reject;
         img.src = reader.result;
@@ -99,8 +109,10 @@
     const file = e.target.files[0];
     if (!file) return;
     try {
-      photoDataUrl = await compressImage(file);
-      $("#photoPreview").src = photoDataUrl;
+      const { thumbDataUrl, fullBlob } = await compressImage(file);
+      photoThumbDataUrl = thumbDataUrl;
+      photoFile = fullBlob;
+      $("#photoPreview").src = photoThumbDataUrl;
       $("#photoPreview").style.display = "block";
       $("#photoPlaceholder").style.display = "none";
     } catch {
@@ -184,15 +196,16 @@
   async function fetchYoutubeSubscribers() {
     const url = $("#url-youtube").value.trim();
     if (!url) return toast("กรุณากรอกลิงก์ช่อง YouTube ก่อน", "error");
-    if (!settings.youtubeApiKey) {
-      return toast("ยังไม่ได้ตั้งค่า YouTube API Key ในหน้า Settings — กรุณากรอกยอดผู้ติดตามเอง", "error");
+    const youtubeApiKey = window.APP_KEYS && window.APP_KEYS.youtubeApiKey;
+    if (!youtubeApiKey) {
+      return toast("ยังไม่ได้ตั้งค่า YouTube API Key ในไฟล์ js/api-keys.js — กรุณากรอกยอดผู้ติดตามเอง", "error");
     }
     const parsed = parseYoutubeUrl(url);
     if (!parsed) return toast("รูปแบบลิงก์ YouTube ไม่ถูกต้อง กรุณากรอกยอดผู้ติดตามเอง", "error");
     const param = parsed.type === "id" ? `id=${parsed.value}` : `forHandle=${encodeURIComponent(parsed.value)}`;
     try {
       const res = await fetch(
-        `${window.APP_CONFIG.YOUTUBE_API_URL}?part=statistics&${param}&key=${settings.youtubeApiKey}`
+        `${window.APP_CONFIG.YOUTUBE_API_URL}?part=statistics&${param}&key=${youtubeApiKey}`
       );
       const data = await res.json();
       const stats = data.items && data.items[0] && data.items[0].statistics;
@@ -219,7 +232,7 @@
   // ---------- validation ----------
   function validateStep(step) {
     if (step === 1) {
-      if (!photoDataUrl) return toast("กรุณาอัปโหลดรูปถ่าย", "error"), false;
+      if (!photoThumbDataUrl) return toast("กรุณาอัปโหลดรูปถ่าย", "error"), false;
       if (!$("#prefix").value) return toast("กรุณาเลือกคำนำหน้า", "error"), false;
       if (!$("#firstName").value.trim() || !$("#lastName").value.trim())
         return toast("กรุณากรอกชื่อ-นามสกุล", "error"), false;
@@ -297,7 +310,7 @@
     try {
       const applicant = {
         id: appId,
-        photo: photoDataUrl,
+        photo: photoThumbDataUrl,
         prefix: $("#prefix").value,
         firstName: $("#firstName").value.trim(),
         lastName: $("#lastName").value.trim(),
@@ -317,7 +330,7 @@
         videoOriginalName: videoFile.name,
         videoType: videoFile.type,
       };
-      await DraftStore.save({ applicant, videoFile, createdAt: new Date().toISOString() });
+      await DraftStore.save({ applicant, videoFile, photoFile, createdAt: new Date().toISOString() });
       window.location.href = "contract.html";
     } catch (err) {
       toast("บันทึกฉบับร่างไม่สำเร็จ: " + err.message, "error");

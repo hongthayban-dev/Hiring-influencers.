@@ -28,11 +28,6 @@
     $("#contractTitle").value = settings.contractTitle || "";
     $("#contractText").value = settings.contractText || "";
     $("#driveFolderId").value = settings.driveFolderId || "";
-    $("#driveClientId").value = settings.driveClientId || "";
-    $("#youtubeApiKey").value = settings.youtubeApiKey || "";
-    $("#emailjsServiceId").value = settings.emailjsServiceId || "";
-    $("#emailjsTemplateId").value = settings.emailjsTemplateId || "";
-    $("#emailjsPublicKey").value = settings.emailjsPublicKey || "";
   }
 
   function renderPrefixes() {
@@ -161,28 +156,7 @@
     );
 
     $("#saveDrive").addEventListener("click", () =>
-      save(
-        {
-          driveFolderId: $("#driveFolderId").value.trim(),
-          driveClientId: $("#driveClientId").value.trim(),
-        },
-        "บันทึกการเชื่อมต่อ Drive แล้ว"
-      )
-    );
-
-    $("#saveYoutube").addEventListener("click", () =>
-      save({ youtubeApiKey: $("#youtubeApiKey").value.trim() }, "บันทึก YouTube API Key แล้ว")
-    );
-
-    $("#saveEmailjs").addEventListener("click", () =>
-      save(
-        {
-          emailjsServiceId: $("#emailjsServiceId").value.trim(),
-          emailjsTemplateId: $("#emailjsTemplateId").value.trim(),
-          emailjsPublicKey: $("#emailjsPublicKey").value.trim(),
-        },
-        "บันทึกการเชื่อมต่ออีเมลแล้ว"
-      )
+      save({ driveFolderId: $("#driveFolderId").value.trim() }, "บันทึก Drive Folder ID แล้ว")
     );
 
     $("#addPrefix").addEventListener("click", async () => {

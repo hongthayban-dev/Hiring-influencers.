@@ -1,5 +1,5 @@
-// เก็บ "ใบสมัครฉบับร่าง" (รวมไฟล์วีดีโอ) ไว้ใน IndexedDB ระหว่างที่ผู้สมัคร
-// เดินทางจากหน้า register.html ไปหน้า contract.html (sessionStorage เก็บไฟล์วีดีโอขนาดใหญ่ไม่ได้)
+// เก็บ "ใบสมัครฉบับร่าง" (รวมไฟล์วีดีโอและรูปเต็ม) ไว้ใน IndexedDB ระหว่างที่ผู้สมัคร
+// เดินทางจากหน้า register.html ไปหน้า contract.html (sessionStorage เก็บไฟล์ขนาดใหญ่ไม่ได้)
 const DraftStore = (() => {
   const DB_NAME = "influ-to-star";
   const STORE = "drafts";

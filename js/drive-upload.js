@@ -4,6 +4,7 @@
 const DriveUpload = (() => {
   let tokenClient = null;
   let gsiLoaded = false;
+  let cachedToken = null; // { clientId, accessToken, expiresAt } — avoids a repeat consent popup within one page session
 
   function loadGsiScript() {
     return new Promise((resolve, reject) => {
@@ -21,14 +22,25 @@ const DriveUpload = (() => {
   }
 
   async function getAccessToken(clientId) {
+    if (cachedToken && cachedToken.clientId === clientId && Date.now() < cachedToken.expiresAt) {
+      return cachedToken.accessToken;
+    }
     await loadGsiScript();
     return new Promise((resolve, reject) => {
       tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: clientId,
         scope: window.APP_CONFIG.DRIVE_SCOPE,
         callback: (resp) => {
-          if (resp && resp.access_token) resolve(resp.access_token);
-          else reject(new Error("ไม่ได้รับสิทธิ์เข้าถึง Google Drive"));
+          if (resp && resp.access_token) {
+            cachedToken = {
+              clientId,
+              accessToken: resp.access_token,
+              expiresAt: Date.now() + (Number(resp.expires_in || 3600) - 60) * 1000,
+            };
+            resolve(resp.access_token);
+          } else {
+            reject(new Error("ไม่ได้รับสิทธิ์เข้าถึง Google Drive"));
+          }
         },
         error_callback: (err) => reject(new Error(err.message || "การขอสิทธิ์ Google Drive ถูกยกเลิก")),
       });
