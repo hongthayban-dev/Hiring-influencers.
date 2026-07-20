@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สัญญาเข้าร่วม — influ to star</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="logo-dot"></span> influ to star</a>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="search.html">ค้นหาผู้สมัคร</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="page-shell section">
+  <div class="container">
+
+    <div id="loadingView" style="text-align:center;">
+      <span class="spinner"></span> กำลังโหลดข้อมูล...
+    </div>
+
+    <div id="noDraftView" style="display:none;text-align:center;">
+      <h2>ไม่พบใบสมัครที่กำลังกรอก</h2>
+      <p>กรุณากลับไปกรอกใบสมัครก่อน</p>
+      <a href="register.html" class="btn btn-primary">ไปหน้าลงทะเบียน</a>
+    </div>
+
+    <div id="contractView" style="display:none;">
+      <div style="text-align:center;margin-bottom:8px;">
+        <span class="sticker pink">ขั้นตอนสุดท้าย</span>
+      </div>
+      <h1 class="section-title" style="margin-top:16px;" id="contractTitle">สัญญาเข้าร่วม</h1>
+      <p class="section-subtitle">กรุณาอ่านข้อตกลงให้ครบถ้วน เลื่อนอ่านจนสุดข้อความเพื่อเปิดใช้งานปุ่มยอมรับ</p>
+
+      <div class="form-card">
+        <div class="contract-box" id="contractText"></div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="acceptCheckbox" disabled>
+          ข้าพเจ้าได้อ่านและเข้าใจข้อตกลงข้างต้นแล้ว และยินยอมให้บันทึกข้อมูลใบสมัครเข้าสู่ระบบของแพลตฟอร์ม MOMOTARO
+        </label>
+        <div style="display:flex;gap:14px;">
+          <a href="register.html" class="btn btn-outline btn-block">← ย้อนกลับไปแก้ไข</a>
+          <button type="button" class="btn btn-primary btn-block" id="btnAccept" disabled>ยอมรับและบันทึกข้อมูล ✅</button>
+        </div>
+        <p class="hint" id="scrollHint" style="text-align:center;margin-top:10px;">เลื่อนอ่านข้อความด้านบนจนสุดเพื่อเปิดใช้งานปุ่ม</p>
+      </div>
+    </div>
+
+    <div id="successView" style="display:none;">
+      <div class="result-hero">
+        <div style="font-size:56px;">🎉</div>
+        <h1>สมัครสำเร็จแล้ว!</h1>
+        <div class="result-id" id="successId"></div>
+        <p style="max-width:520px;margin:16px auto;">
+          ทีม MOMOTARO ได้รับใบสมัครของคุณแล้ว กรุณารอการติดต่อกลับจากทีมงาน
+        </p>
+        <p class="hint" id="emailStatus"></p>
+        <p class="hint" id="videoStatus"></p>
+        <div style="display:flex;gap:14px;justify-content:center;margin-top:20px;">
+          <a href="index.html" class="btn btn-outline">กลับหน้าแรก</a>
+          <a href="search.html" class="btn btn-primary">ค้นหาใบสมัครของฉัน</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container footer-bottom">© 2026 MOMOTARO Platform · influ to star</div>
+</footer>
+
+<div id="toastWrap"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/draft-store.js"></script>
+<script src="js/drive-upload.js"></script>
+<script src="js/email.js"></script>
+<script src="js/contract.js"></script>
+</body>
+</html>

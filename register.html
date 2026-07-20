@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ลงทะเบียนสมัครเข้าร่วม — influ to star</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="logo-dot"></span> influ to star</a>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="search.html">ค้นหาผู้สมัคร</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="page-shell section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:8px;">
+      <span class="sticker teal">ใบสมัครเข้าร่วม MOMOTARO</span>
+    </div>
+    <h1 class="section-title" style="margin-top:16px;">ลงทะเบียนสมัคร <span class="gradient-text">Influencer</span></h1>
+
+    <div class="form-card">
+      <div style="text-align:center;margin-bottom:18px;">
+        <span class="hint">รหัสผู้สมัครของคุณ</span>
+        <div class="result-id" id="appIdDisplay" style="font-size:28px;">กำลังสร้างรหัส...</div>
+      </div>
+
+      <div class="wizard-progress" id="wizardProgress"></div>
+
+      <form id="registerForm" novalidate>
+        <!-- STEP 1: ข้อมูลส่วนตัว -->
+        <section class="wizard-step" data-step="1">
+          <h2 class="step-title">1. ข้อมูลส่วนตัว</h2>
+          <p class="step-desc">กรอกข้อมูลพื้นฐานของคุณให้ครบถ้วน</p>
+
+          <div class="field">
+            <label>รูปถ่าย <span class="req">*</span></label>
+            <div class="dropzone" id="photoDropzone">
+              <img id="photoPreview" class="photo-preview" style="display:none;">
+              <div id="photoPlaceholder">📷<br>คลิกเพื่ออัปโหลดรูปถ่ายหน้าตรง</div>
+              <input type="file" id="photoInput" accept="image/*">
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div class="field">
+              <label>คำนำหน้า <span class="req">*</span></label>
+              <select id="prefix" required></select>
+            </div>
+            <div class="field">
+              <label>เบอร์โทรศัพท์ <span class="req">*</span></label>
+              <input type="tel" id="phone" placeholder="08xxxxxxxx" required>
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div class="field">
+              <label>ชื่อ <span class="req">*</span></label>
+              <input type="text" id="firstName" required>
+            </div>
+            <div class="field">
+              <label>นามสกุล <span class="req">*</span></label>
+              <input type="text" id="lastName" required>
+            </div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div class="field">
+              <label>วันเกิด <span class="req">*</span></label>
+              <input type="date" id="birthDate" required>
+            </div>
+            <div class="field">
+              <label>อายุ (คำนวณอัตโนมัติ)</label>
+              <input type="number" id="age" readonly>
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 2: โซเชียลมีเดีย -->
+        <section class="wizard-step" data-step="2" style="display:none;">
+          <h2 class="step-title">2. ผูกช่องทางโซเชียลมีเดีย</h2>
+          <p class="step-desc">เลือกอย่างน้อย 1 ช่องทาง กดลิงก์เพื่อตรวจสอบ แล้วกรอกยอดผู้ติดตามของช่องนั้น</p>
+          <div id="socialCardsWrap"></div>
+          <p class="hint" id="socialError" style="color:#d92c54;display:none;">กรุณาเชื่อมต่ออย่างน้อย 1 ช่องทาง</p>
+        </section>
+
+        <!-- STEP 3: ข้อมูลติดต่อ -->
+        <section class="wizard-step" data-step="3" style="display:none;">
+          <h2 class="step-title">3. ข้อมูลติดต่อเพิ่มเติม</h2>
+          <p class="step-desc">ใช้สำหรับการติดต่อกลับจากทีม MOMOTARO</p>
+          <div class="field">
+            <label>Line ID <span class="req">*</span></label>
+            <input type="text" id="lineId" required>
+          </div>
+          <div class="field">
+            <label>Email <span class="req">*</span></label>
+            <input type="email" id="email" required>
+            <span class="hint">จะใช้อีเมลนี้ส่งใบยืนยันการรับสมัครและรายละเอียดสัญญา</span>
+          </div>
+        </section>
+
+        <!-- STEP 4: ที่อยู่ -->
+        <section class="wizard-step" data-step="4" style="display:none;">
+          <h2 class="step-title">4. ที่อยู่ปัจจุบัน</h2>
+          <p class="step-desc">เลือกจังหวัด อำเภอ ตำบล ระบบจะเติมรหัสไปรษณีย์ให้อัตโนมัติ</p>
+          <div class="field-row cols-3">
+            <div class="field">
+              <label>จังหวัด <span class="req">*</span></label>
+              <select id="province" required></select>
+            </div>
+            <div class="field">
+              <label>อำเภอ/เขต <span class="req">*</span></label>
+              <select id="district" required></select>
+            </div>
+            <div class="field">
+              <label>ตำบล/แขวง <span class="req">*</span></label>
+              <select id="subdistrict" required></select>
+            </div>
+          </div>
+          <div class="field-row cols-2">
+            <div class="field">
+              <label>บ้านเลขที่ / ถนน / หมู่บ้าน <span class="req">*</span></label>
+              <input type="text" id="addressDetail" required>
+            </div>
+            <div class="field">
+              <label>รหัสไปรษณีย์</label>
+              <input type="text" id="zipcode">
+            </div>
+          </div>
+        </section>
+
+        <!-- STEP 5: วีดีโอ -->
+        <section class="wizard-step" data-step="5" style="display:none;">
+          <h2 class="step-title">5. วีดีโอแนะนำตัว</h2>
+          <p class="step-desc">อัปโหลดคลิปแนะนำตัวสั้น ๆ ระบบจะเปลี่ยนชื่อไฟล์ให้ตรงกับรหัสผู้สมัครของคุณอัตโนมัติ</p>
+          <div class="dropzone" id="videoDropzone">
+            <div id="videoPlaceholder">🎬<br>คลิกเพื่ืออัปโหลดวีดีโอแนะนำตัว (mp4, mov ฯลฯ)</div>
+            <div id="videoInfo" style="display:none;font-weight:700;"></div>
+            <input type="file" id="videoInput" accept="video/*">
+          </div>
+        </section>
+
+        <!-- STEP 6: ตรวจสอบ -->
+        <section class="wizard-step" data-step="6" style="display:none;">
+          <h2 class="step-title">6. ตรวจสอบข้อมูลก่อนไปหน้าสัญญา</h2>
+          <p class="step-desc">กรุณาตรวจสอบความถูกต้อง หากถูกต้องแล้วให้กด "ไปหน้าสัญญา"</p>
+          <div id="reviewSummary" class="card" style="background:var(--cream);"></div>
+        </section>
+
+        <div class="wizard-nav">
+          <button type="button" class="btn btn-outline" id="btnPrev">← ย้อนกลับ</button>
+          <button type="button" class="btn btn-primary" id="btnNext">ถัดไป →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container footer-bottom">© 2026 MOMOTARO Platform · influ to star</div>
+</footer>
+
+<div id="toastWrap"></div>
+
+<script src="location-data.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/location.js"></script>
+<script src="js/draft-store.js"></script>
+<script src="js/register.js"></script>
+</body>
+</html>

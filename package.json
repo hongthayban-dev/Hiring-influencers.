@@ -1,0 +1,14 @@
+{
+  "name": "influ-to-star",
+  "version": "1.0.0",
+  "description": "Influ to Star - หน้าลงทะเบียนรับสมัคร influencer เข้าร่วม Platform MOMOTARO",
+  "private": true,
+  "scripts": {
+    "server": "json-server --watch db.json --port 3001",
+    "web": "http-server -p 5500 -c-1 ."
+  },
+  "devDependencies": {
+    "json-server": "^0.17.4",
+    "http-server": "^14.1.1"
+  }
+}

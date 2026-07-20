@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ค้นหาผู้สมัคร — influ to star</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/print.css">
+</head>
+<body>
+
+<div id="gateView" class="gate-screen">
+  <div class="form-card" style="max-width:380px;">
+    <h2 style="text-align:center;">🔒 สำหรับผู้ดูแลระบบ</h2>
+    <p class="hint" style="text-align:center;margin-bottom:16px;">กรอกรหัสผ่านเพื่อเข้าใช้งานหน้าค้นหาผู้สมัคร</p>
+    <div class="field">
+      <input type="password" id="gatePasscode" placeholder="รหัสผ่าน">
+    </div>
+    <button type="button" class="btn btn-primary btn-block" id="gateSubmit">เข้าสู่ระบบ</button>
+    <p class="hint" id="gateError" style="display:none;color:#d92c54;text-align:center;margin-top:10px;">รหัสผ่านไม่ถูกต้อง</p>
+    <p style="text-align:center;margin-top:16px;"><a href="index.html">← กลับหน้าแรก</a></p>
+  </div>
+</div>
+
+<div id="appView" style="display:none;">
+
+<header class="navbar no-print">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="logo-dot"></span> influ to star</a>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="register.html">สมัครเข้าร่วม</a></li>
+      <li><a href="settings.html">Settings</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="page-shell section">
+  <div class="container">
+    <h1 class="section-title">ค้นหา<span class="gradient-text">ผู้สมัคร</span></h1>
+    <p class="section-subtitle">ค้นหาด้วยรหัสผู้สมัคร เช่น ID-0001</p>
+
+    <div class="form-card no-print" style="margin-bottom:32px;">
+      <div style="display:flex;gap:12px;">
+        <input type="text" id="searchInput" placeholder="กรอกรหัสผู้สมัคร เช่น ID-0001" style="flex:1;">
+        <button type="button" class="btn btn-primary" id="btnSearch">ค้นหา 🔍</button>
+      </div>
+      <datalist id="idSuggestions"></datalist>
+      <p class="hint" id="searchStatus" style="margin-top:10px;"></p>
+    </div>
+
+    <div id="printArea"></div>
+
+    <div id="printControls" style="display:none;text-align:center;margin-top:24px;" class="no-print">
+      <button type="button" class="btn btn-cool" id="btnPrint">🖨️ พิมพ์ใบสมัคร (A4)</button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer no-print">
+  <div class="container footer-bottom">© 2026 MOMOTARO Platform · influ to star</div>
+</footer>
+
+</div>
+
+<div id="toastWrap"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin-gate.js"></script>
+<script src="js/search.js"></script>
+</body>
+</html>

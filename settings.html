@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — influ to star</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="gateView" class="gate-screen">
+  <div class="form-card" style="max-width:380px;">
+    <h2 style="text-align:center;">🔒 สำหรับผู้ดูแลระบบ</h2>
+    <p class="hint" style="text-align:center;margin-bottom:16px;">กรอกรหัสผ่านเพื่อเข้าใช้งานหน้า Settings</p>
+    <div class="field">
+      <input type="password" id="gatePasscode" placeholder="รหัสผ่าน">
+    </div>
+    <button type="button" class="btn btn-primary btn-block" id="gateSubmit">เข้าสู่ระบบ</button>
+    <p class="hint" id="gateError" style="display:none;color:#d92c54;text-align:center;margin-top:10px;">รหัสผ่านไม่ถูกต้อง</p>
+    <p style="text-align:center;margin-top:16px;"><a href="index.html">← กลับหน้าแรก</a></p>
+  </div>
+</div>
+
+<div id="appView" style="display:none;">
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><span class="logo-dot"></span> influ to star</a>
+    <ul class="nav-links">
+      <li><a href="index.html">หน้าแรก</a></li>
+      <li><a href="register.html">สมัครเข้าร่วม</a></li>
+      <li><a href="search.html">ค้นหาผู้สมัคร</a></li>
+    </ul>
+  </div>
+</header>
+
+<div class="page-shell section">
+  <div class="container" style="max-width:900px;">
+    <h1 class="section-title">⚙️ <span class="gradient-text">Settings</span></h1>
+    <p class="section-subtitle">ตั้งค่าสัญญา ข้อมูลตัวเลือกในฟอร์ม และการเชื่อมต่อระบบภายนอก</p>
+
+    <!-- ทั่วไป -->
+    <div class="form-card settings-section">
+      <h3>ข้อมูลทั่วไป</h3>
+      <div class="field-row cols-2">
+        <div class="field">
+          <label>ชื่อแพลตฟอร์ม</label>
+          <input type="text" id="platformName">
+        </div>
+        <div class="field">
+          <label>ชื่อโปรเจกต์</label>
+          <input type="text" id="projectName">
+        </div>
+      </div>
+      <div class="field">
+        <label>รหัสผ่านผู้ดูแล (ใช้เข้าหน้า Settings / ค้นหาผู้สมัคร)</label>
+        <input type="text" id="adminPasscode">
+        <span class="hint">⚠️ เป็นการกันเผลอเปิดดูข้อมูลเบื้องต้นเท่านั้น ไม่ใช่ระบบความปลอดภัยระดับสูง เพราะทำงานฝั่งเบราว์เซอร์ทั้งหมด</span>
+      </div>
+      <div class="field">
+        <label>เลข ID ผู้สมัครถัดไป</label>
+        <input type="number" id="nextId" min="1">
+        <span class="hint">ปรับได้กรณีต้องการเริ่มเลขใหม่ ระมัดระวังไม่ให้ซ้ำกับที่มีอยู่แล้ว</span>
+      </div>
+      <button type="button" class="btn btn-primary" id="saveGeneral">บันทึกข้อมูลทั่วไป</button>
+    </div>
+
+    <!-- สัญญา -->
+    <div class="form-card settings-section">
+      <h3>ข้อความสัญญา</h3>
+      <div class="field">
+        <label>ชื่อสัญญา</label>
+        <input type="text" id="contractTitle">
+      </div>
+      <div class="field">
+        <label>เนื้อหาสัญญา</label>
+        <textarea id="contractText" style="min-height:320px;"></textarea>
+        <span class="hint">ข้อความนี้จะแสดงในหน้าสัญญาก่อนผู้สมัครกดยอมรับ</span>
+      </div>
+      <button type="button" class="btn btn-primary" id="saveContract">บันทึกข้อความสัญญา</button>
+    </div>
+
+    <!-- คำนำหน้า -->
+    <div class="form-card settings-section">
+      <h3>คำนำหน้าชื่อ</h3>
+      <div class="tag-list" id="prefixList"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <input type="text" id="newPrefix" placeholder="เพิ่มคำนำหน้าใหม่ เช่น ดร.">
+        <button type="button" class="btn btn-sm btn-cool" id="addPrefix">+ เพิ่ม</button>
+      </div>
+    </div>
+
+    <!-- ช่องทางโซเชียล -->
+    <div class="form-card settings-section">
+      <h3>ช่องทางโซเชียลมีเดียในฟอร์มสมัคร</h3>
+      <table class="data-table" id="socialTable">
+        <thead><tr><th>รหัส</th><th>ชื่อที่แสดง</th><th>สี</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+        <input type="text" id="newSocialId" placeholder="รหัส เช่น instagram" style="max-width:160px;">
+        <input type="text" id="newSocialLabel" placeholder="ชื่อที่แสดง เช่น Instagram" style="max-width:200px;">
+        <input type="color" id="newSocialColor" value="#7c3aed" style="max-width:70px;padding:4px;">
+        <button type="button" class="btn btn-sm btn-cool" id="addSocial">+ เพิ่มช่องทาง</button>
+      </div>
+    </div>
+
+    <!-- Google Drive -->
+    <div class="form-card settings-section">
+      <h3>การอัปโหลดวีดีโอขึ้น Google Drive</h3>
+      <p class="hint">ต้องสร้าง OAuth Client ID ประเภท "Web application" ใน Google Cloud Console แล้วเพิ่มโดเมนที่ใช้เปิดเว็บนี้ใน Authorized JavaScript origins จึงจะอัปโหลดอัตโนมัติได้ ถ้าไม่ตั้งค่า ระบบจะดาวน์โหลดไฟล์ (เปลี่ยนชื่อตาม ID) ให้อัปโหลดเข้า Drive ด้วยมือแทน</p>
+      <div class="field">
+        <label>Google Drive Folder ID</label>
+        <input type="text" id="driveFolderId">
+      </div>
+      <div class="field">
+        <label>Google OAuth Client ID</label>
+        <input type="text" id="driveClientId" placeholder="xxxxxxxx.apps.googleusercontent.com">
+      </div>
+      <button type="button" class="btn btn-primary" id="saveDrive">บันทึกการเชื่อมต่อ Drive</button>
+    </div>
+
+    <!-- YouTube API -->
+    <div class="form-card settings-section">
+      <h3>YouTube Data API (ดึงยอดผู้ติดตามอัตโนมัติ)</h3>
+      <p class="hint">สร้าง API Key จาก Google Cloud Console แล้วเปิดใช้งาน "YouTube Data API v3"</p>
+      <div class="field">
+        <label>YouTube API Key</label>
+        <input type="text" id="youtubeApiKey">
+      </div>
+      <button type="button" class="btn btn-primary" id="saveYoutube">บันทึก YouTube API Key</button>
+    </div>
+
+    <!-- EmailJS -->
+    <div class="form-card settings-section">
+      <h3>การส่งอีเมลแจ้งเตือนผู้สมัคร (EmailJS)</h3>
+      <p class="hint">สมัครใช้งานฟรีที่ emailjs.com สร้าง Email Service + Template แล้วนำค่าต่อไปนี้มากรอก Template ควรมีตัวแปร to_email, to_name, applicant_id, platform_name, contract_title, contract_text</p>
+      <div class="field-row cols-3">
+        <div class="field">
+          <label>Service ID</label>
+          <input type="text" id="emailjsServiceId">
+        </div>
+        <div class="field">
+          <label>Template ID</label>
+          <input type="text" id="emailjsTemplateId">
+        </div>
+        <div class="field">
+          <label>Public Key</label>
+          <input type="text" id="emailjsPublicKey">
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary" id="saveEmailjs">บันทึกการเชื่อมต่ออีเมล</button>
+    </div>
+
+    <!-- ผู้สมัครทั้งหมด -->
+    <div class="form-card settings-section">
+      <h3>รายชื่อผู้สมัครทั้งหมด</h3>
+      <div class="admin-toolbar">
+        <button type="button" class="btn btn-sm btn-outline" id="refreshApplicants">🔄 รีเฟรช</button>
+        <span class="hint" id="applicantCount"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table" id="applicantTable">
+          <thead><tr><th>ID</th><th>ชื่อ-นามสกุล</th><th>เบอร์โทร</th><th>สถานะ</th><th>วันที่สมัคร</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container footer-bottom">© 2026 MOMOTARO Platform · influ to star</div>
+</footer>
+
+</div>
+
+<div id="toastWrap"></div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/admin-gate.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>
