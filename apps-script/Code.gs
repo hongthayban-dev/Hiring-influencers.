@@ -216,3 +216,43 @@ function doPost(e) {
     return errorResponse_(err);
   }
 }
+
+// ---------- ทดสอบด้วยมือ ----------
+// ในหน้า Apps Script: เลือกฟังก์ชัน "testCreateApplicant" จาก dropdown ข้างปุ่ม Run แล้วกด Run ▶
+// ไม่ต้อง deploy ก่อนก็ทดสอบได้ — เช็คว่ามีแถวใหม่ขึ้นในแท็บ Applicants เป็น 1 แถวถูกต้อง
+// (เขียนทับ id เดิมได้ ถ้ารันซ้ำจะได้แถวใหม่เพิ่มทุกครั้ง ลบทิ้งเองได้หลังทดสอบเสร็จ)
+function testCreateApplicant() {
+  const sample = {
+    id: "ID-TEST",
+    prefix: "นาย",
+    firstName: "ทดสอบ",
+    lastName: "ระบบ",
+    age: 25,
+    birthDate: "2001-01-01",
+    phone: "0800000000",
+    lineId: "test_line",
+    email: "test@example.com",
+    address: { province: "กรุงเทพมหานคร", district: "บางรัก", subdistrict: "สีลม", detail: "123 ถ.สีลม", zipcode: "10500" },
+    socials: { tiktok: { url: "", followers: "", connected: false }, facebook: { url: "https://facebook.com/test", followers: 1000, connected: true }, youtube: { url: "", followers: "", connected: false } },
+    photo: "",
+    videoFilename: "ID-TEST.mp4",
+    videoType: "video/mp4",
+    videoOriginalName: "test.mp4",
+    videoStatus: "pending_manual_upload",
+    videoDriveLink: null,
+    videoDriveId: null,
+    photoDriveLink: null,
+    photoDriveId: null,
+    contractAccepted: true,
+    contractAcceptedAt: new Date().toISOString(),
+    status: "รอการติดต่อกลับ",
+    createdAt: new Date().toISOString(),
+  };
+  const result = createApplicant_(sample);
+  Logger.log(JSON.stringify(result, null, 2));
+}
+
+// ทดสอบอ่าน settings กลับมา (ต้องกรอกแท็บ Settings ไว้ก่อน) — Run > testReadSettings แล้วดูผลที่ View > Logs
+function testReadSettings() {
+  Logger.log(JSON.stringify(readSettings_(), null, 2));
+}
