@@ -13,7 +13,7 @@
 
   async function save(patch, successMsg) {
     try {
-      settings = await Api.updateSettings(patch);
+      settings = await Api.updateSettings(patch, AdminGate.getPasscode());
       toast(successMsg || "บันทึกสำเร็จ", "success");
     } catch (err) {
       toast(err.message, "error");
@@ -23,7 +23,8 @@
   function fillGeneralForm() {
     $("#platformName").value = settings.platformName || "";
     $("#projectName").value = settings.projectName || "";
-    $("#adminPasscode").value = settings.adminPasscode || "";
+    // เซิร์ฟเวอร์ไม่ส่งรหัสผ่านปัจจุบันกลับมาเลย (กันหลุด) เว้นว่างไว้ = ไม่เปลี่ยนรหัสผ่าน
+    $("#adminPasscode").value = "";
     $("#nextId").value = settings.nextId || 1;
     $("#contractTitle").value = settings.contractTitle || "";
     $("#contractText").value = settings.contractText || "";
@@ -88,7 +89,7 @@
     const tbody = $("#applicantTable tbody");
     tbody.innerHTML = `<tr><td colspan="6">กำลังโหลด...</td></tr>`;
     try {
-      const list = await Api.listApplicants();
+      const list = await Api.listApplicants(AdminGate.getPasscode());
       $("#applicantCount").textContent = `ทั้งหมด ${list.length} รายการ`;
       tbody.innerHTML = "";
       if (!list.length) {
@@ -119,7 +120,7 @@
         btn.addEventListener("click", async () => {
           if (!confirm("ยืนยันลบใบสมัครนี้? การลบไม่สามารถย้อนกลับได้")) return;
           try {
-            await Api.deleteApplicant(btn.dataset.del);
+            await Api.deleteApplicant(btn.dataset.del, AdminGate.getPasscode());
             toast("ลบใบสมัครแล้ว", "success");
             loadApplicants();
           } catch (err) {
@@ -133,17 +134,18 @@
   }
 
   function wireButtons() {
-    $("#saveGeneral").addEventListener("click", () =>
-      save(
-        {
-          platformName: $("#platformName").value.trim(),
-          projectName: $("#projectName").value.trim(),
-          adminPasscode: $("#adminPasscode").value.trim() || "0000",
-          nextId: parseInt($("#nextId").value, 10) || 1,
-        },
-        "บันทึกข้อมูลทั่วไปแล้ว"
-      )
-    );
+    $("#saveGeneral").addEventListener("click", async () => {
+      const patch = {
+        platformName: $("#platformName").value.trim(),
+        projectName: $("#projectName").value.trim(),
+        nextId: parseInt($("#nextId").value, 10) || 1,
+      };
+      // ส่ง adminPasscode เฉพาะตอนกรอกค่าใหม่จริงๆ เท่านั้น เว้นว่างไว้ = ไม่แตะรหัสผ่านเดิม
+      const newPasscode = $("#adminPasscode").value.trim();
+      if (newPasscode) patch.adminPasscode = newPasscode;
+      await save(patch, "บันทึกข้อมูลทั่วไปแล้ว");
+      $("#adminPasscode").value = "";
+    });
 
     $("#saveContract").addEventListener("click", () =>
       save(
@@ -194,7 +196,7 @@
       toast(err.message, "error");
       return;
     }
-    AdminGate.init(settings, () => {
+    AdminGate.init(() => {
       fillGeneralForm();
       renderPrefixes();
       renderSocialTable();

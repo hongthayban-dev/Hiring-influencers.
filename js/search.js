@@ -1,7 +1,6 @@
 // หน้าค้นหาผู้สมัคร: gate ด้วยรหัสผ่าน, ค้นหาด้วย ID, แสดงใบสมัคร A4 พร้อม QR code วีดีโอ
 (() => {
   const $ = (sel) => document.querySelector(sel);
-  let settings = null;
 
   function toast(message, type = "") {
     const el = document.createElement("div");
@@ -12,13 +11,7 @@
   }
 
   async function checkGate() {
-    try {
-      settings = await Api.getSettings();
-    } catch (err) {
-      toast(err.message, "error");
-      return;
-    }
-    AdminGate.init(settings, unlockApp);
+    AdminGate.init(unlockApp);
   }
 
   async function unlockApp() {
@@ -36,7 +29,7 @@
 
   async function populateSuggestions() {
     try {
-      const list = await Api.listApplicants();
+      const list = await Api.listApplicants(AdminGate.getPasscode());
       const dl = $("#idSuggestions");
       list.forEach((a) => {
         const opt = document.createElement("option");
@@ -121,7 +114,7 @@
     if (!code) return toast("กรุณากรอกรหัสผู้สมัคร", "error");
     $("#searchStatus").textContent = "กำลังค้นหา...";
     try {
-      const applicant = await Api.getApplicantByCode(code);
+      const applicant = await Api.getApplicantByCode(code, AdminGate.getPasscode());
       if (!applicant) {
         $("#searchStatus").textContent = `ไม่พบผู้สมัครรหัส "${code}"`;
         $("#printArea").innerHTML = "";

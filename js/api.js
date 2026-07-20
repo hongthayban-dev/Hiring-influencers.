@@ -1,57 +1,55 @@
-// ชั้นเชื่อมต่อ API กับ json-server (db.json)
-// ถ้า json-server ไม่ได้เปิดอยู่ ฟังก์ชันเหล่านี้จะ throw error ที่มีข้อความอ่านง่ายให้ผู้ใช้ทราบ
+// ชั้นเชื่อมต่อ API กับ backend Google Apps Script (ดู apps-script/Code.gs) ที่อ่าน/เขียน Google Sheet
+// Apps Script Web App คืนค่าเป็น HTTP 200 เสมอ ต้องเช็ค field "error" ในตัว response แทนการเช็ค res.ok
 const Api = (() => {
   const base = () => window.APP_CONFIG.API_BASE;
 
-  async function request(path, options = {}) {
+  function unwrap(data) {
+    if (data && data.error) throw new Error(data.error);
+    return data;
+  }
+
+  async function requestGet(action, params = {}) {
+    const qs = new URLSearchParams({ action, ...params });
     let res;
     try {
-      res = await fetch(base() + path, {
-        headers: { "Content-Type": "application/json" },
-        ...options,
+      res = await fetch(base() + "?" + qs.toString());
+    } catch (err) {
+      throw new Error("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ข้อมูลได้ กรุณาตรวจสอบอินเทอร์เน็ตหรือค่า API_BASE ในไฟล์ js/config.js");
+    }
+    return unwrap(await res.json());
+  }
+
+  async function requestPost(action, payload, passcode) {
+    let res;
+    try {
+      res = await fetch(base(), {
+        method: "POST",
+        // ใช้ text/plain แทน application/json เพื่อเลี่ยง CORS preflight ที่ Apps Script Web App จัดการไม่ได้
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, payload, passcode }),
       });
     } catch (err) {
-      throw new Error(
-        "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ข้อมูลได้ กรุณาตรวจสอบว่าได้เปิด json-server ไว้ (npm run server) แล้วหรือยัง"
-      );
+      throw new Error("ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ข้อมูลได้ กรุณาตรวจสอบอินเทอร์เน็ตหรือค่า API_BASE ในไฟล์ js/config.js");
     }
-    if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ (${res.status}) ${text}`);
-    }
-    if (res.status === 204) return null;
-    return res.json();
+    return unwrap(await res.json());
   }
 
   return {
-    getSettings: () => request("/settings"),
-    updateSettings: (patch) =>
-      request("/settings", { method: "PATCH", body: JSON.stringify(patch) }),
+    getSettings: () => requestGet("getSettings"),
+    updateSettings: (patch, passcode) => requestPost("updateSettings", patch, passcode),
 
-    listApplicants: () => request("/applicants"),
-    getApplicantByCode: async (code) => {
-      const list = await request(
-        `/applicants?id=${encodeURIComponent(code)}`
-      );
-      return list && list.length ? list[0] : null;
-    },
-    createApplicant: (applicant) =>
-      request("/applicants", { method: "POST", body: JSON.stringify(applicant) }),
-    updateApplicant: (dbId, patch) =>
-      request(`/applicants/${dbId}`, { method: "PATCH", body: JSON.stringify(patch) }),
-    deleteApplicant: (dbId) =>
-      request(`/applicants/${dbId}`, { method: "DELETE" }),
+    listApplicants: (passcode) => requestGet("listApplicants", { passcode }),
+    getApplicantByCode: (code, passcode) => requestGet("getApplicantByCode", { id: code, passcode }),
+    createApplicant: (applicant) => requestPost("createApplicant", applicant),
+    updateApplicant: (id, patch, passcode) => requestPost("updateApplicant", { id, patch }, passcode),
+    deleteApplicant: (id, passcode) => requestPost("deleteApplicant", { id }, passcode),
 
-    // จองเลข ID ถัดไปแบบเรียงเลข เช่น ID-0001
+    verifyPasscode: (passcode) => requestGet("verifyPasscode", { passcode }),
+
+    // จองเลข ID ถัดไปแบบเรียงเลข เช่น ID-0001 (กันชนกันฝั่ง server ด้วย LockService)
     async reserveNextId() {
-      const settings = await request("/settings");
-      const n = settings.nextId || 1;
-      const code = "ID-" + String(n).padStart(4, "0");
-      await request("/settings", {
-        method: "PATCH",
-        body: JSON.stringify({ nextId: n + 1 }),
-      });
-      return code;
+      const result = await requestGet("reserveNextId");
+      return result.id;
     },
   };
 })();
