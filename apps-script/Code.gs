@@ -256,3 +256,25 @@ function testCreateApplicant() {
 function testReadSettings() {
   Logger.log(JSON.stringify(readSettings_(), null, 2));
 }
+
+// วินิจฉัยปัญหา createApplicant ไม่ขึ้นแถว — Run > testDiagnose แล้วดูผลที่ View > Logs
+// จะบอก URL/ชื่อของสเปรดชีตที่สคริปต์นี้ผูกอยู่จริง (เทียบกับ URL ที่คุณเปิดดูอยู่),
+// รายชื่อแท็บทั้งหมดที่มี, และจำนวนแถว/หัวตารางปัจจุบันของแท็บ Applicants
+function testDiagnose() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log("Spreadsheet name: " + ss.getName());
+  Logger.log("Spreadsheet URL: " + ss.getUrl());
+  Logger.log("แท็บทั้งหมดที่มี: " + ss.getSheets().map((s) => s.getName()).join(", "));
+
+  const sheet = getSheet_(APPLICANTS_SHEET);
+  const values = sheet.getDataRange().getValues();
+  Logger.log("Applicants sheet ชื่อจริง: " + sheet.getName());
+  Logger.log("Applicants จำนวนแถวทั้งหมด (รวมหัวตาราง): " + values.length);
+  Logger.log("Applicants หัวตาราง (แถว 1): " + JSON.stringify(values[0]));
+  if (values.length > 1) Logger.log("แถวที่ 2: " + JSON.stringify(values[1]));
+
+  Logger.log("ลอง appendRow ทดสอบตรงๆ...");
+  sheet.appendRow(["DIAG-" + new Date().getTime()]);
+  const after = sheet.getDataRange().getValues();
+  Logger.log("จำนวนแถวหลัง appendRow: " + after.length);
+}
